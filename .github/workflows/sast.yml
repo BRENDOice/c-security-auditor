@@ -1,0 +1,85 @@
+name: DevSecOps SAST Security Audit
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  sast-audit-linux:
+    name: SAST Audit & Build (Linux GCC C11)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Build Toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc make
+
+      - name: Verify GCC Version & Compiler Flags
+        run: |
+          gcc --version
+
+      - name: Compile c-security-auditor (Strict C11)
+        run: |
+          make -C c-security-auditor clean
+          make -C c-security-auditor CFLAGS="-std=c11 -Wall -Wextra -Werror -pedantic -O2"
+
+      - name: Run Test Suite & Generate Security Reports
+        run: |
+          mkdir -p c-security-auditor/reports
+          # Vulnerable sample: expect exit code 1 (policy violation)
+          ./c-security-auditor/build/c-security-auditor c-security-auditor/tests/vulnerable_sample.c \
+            -o c-security-auditor/reports/vulnerability_report.md -f markdown || true
+
+          ./c-security-auditor/build/c-security-auditor c-security-auditor/tests/vulnerable_sample.c \
+            -o c-security-auditor/reports/vulnerability_report.json -f json || true
+
+          # Clean sample: must pass with exit code 0
+          ./c-security-auditor/build/c-security-auditor c-security-auditor/tests/clean_sample.c
+
+      - name: Self-Scan Engine Codebase
+        run: |
+          ./c-security-auditor/build/c-security-auditor c-security-auditor/src/ \
+            -o c-security-auditor/reports/self_audit_report.json -f json
+
+      - name: Archive SAST Security Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sast-audit-reports-linux
+          path: c-security-auditor/reports/
+          retention-days: 14
+
+  sast-audit-windows:
+    name: SAST Audit & Build (Windows PowerShell MinGW)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Execute PowerShell Build & SAST Test Automation
+        shell: pwsh
+        run: |
+          cd c-security-auditor
+          .\build.ps1
+
+      - name: Archive Windows SAST Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sast-audit-reports-windows
+          path: |
+            c-security-auditor/build/*.md
+            c-security-auditor/build/*.json
+          retention-days: 14

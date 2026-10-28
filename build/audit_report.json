@@ -1,0 +1,153 @@
+{
+  "tool": {
+    "name": "c-security-auditor",
+    "version": "1.0.0",
+    "standard": "ISO/IEC 9899:2011 (C11)",
+    "category": "Static Application Security Testing (SAST)"
+  },
+  "scan": {
+    "target": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+    "timestamp": "2026-10-28T23:33:07Z",
+    "duration_ms": 0.00,
+    "files_scanned": 1,
+    "lines_scanned": 77
+  },
+  "summary": {
+    "total_findings": 9,
+    "critical": 1,
+    "high": 8,
+    "medium": 0,
+    "low": 0,
+    "info": 0,
+    "suppressed": 0,
+    "policy_status": "FAILED"
+  },
+  "findings": [
+    {
+      "id": 1,
+      "rule_id": "RULE_CWE_242_GETS",
+      "cwe_id": "CWE-242",
+      "cwe_name": "Use of Inherently Dangerous Function",
+      "severity": "CRITICAL",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 16,
+      "column": 5,
+      "snippet": "gets(user_buffer);",
+      "message": "Use of inherently dangerous function 'gets()' which cannot prevent buffer overflow.",
+      "remediation": "Replace with 'fgets(buffer, sizeof(buffer), stdin)' to enforce bounds.",
+      "suppressed": false
+    },
+    {
+      "id": 2,
+      "rule_id": "RULE_CWE_120_STRCPY",
+      "cwe_id": "CWE-120",
+      "cwe_name": "Buffer Copy without Checking Size of Input",
+      "severity": "HIGH",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 23,
+      "column": 5,
+      "snippet": "strcpy(dest, untrusted_input);",
+      "message": "Unbounded memory copy using 'strcpy()'. Destination buffer may be overrun.",
+      "remediation": "Use 'strncpy()' with explicit null-termination or 'snprintf(dest, sizeof(dest), \"%s\", src)'.",
+      "suppressed": false
+    },
+    {
+      "id": 3,
+      "rule_id": "RULE_CWE_120_STRCAT",
+      "cwe_id": "CWE-120",
+      "cwe_name": "Buffer Copy without Checking Size of Input",
+      "severity": "HIGH",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 27,
+      "column": 5,
+      "snippet": "strcat(dest, suffix);",
+      "message": "Unbounded string concatenation using 'strcat()' may exceed allocated buffer size.",
+      "remediation": "Use bounded 'strncat()' with remaining buffer length calculation, or 'snprintf()'.",
+      "suppressed": false
+    },
+    {
+      "id": 4,
+      "rule_id": "RULE_CWE_120_SPRINTF",
+      "cwe_id": "CWE-120",
+      "cwe_name": "Buffer Copy without Checking Size of Input",
+      "severity": "HIGH",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 34,
+      "column": 5,
+      "snippet": "sprintf(query, \"SELECT * FROM accounts WHERE uid='%s'\", user_id);",
+      "message": "Unbounded formatting via 'sprintf()' can write beyond target buffer capacity.",
+      "remediation": "Replace with 'snprintf(dest, sizeof(dest), format, ...)' specifying maximum capacity.",
+      "suppressed": false
+    },
+    {
+      "id": 5,
+      "rule_id": "RULE_CWE_78_SYSTEM",
+      "cwe_id": "CWE-78",
+      "cwe_name": "Improper Neutralization of Special Elements used in an OS Command",
+      "severity": "HIGH",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 42,
+      "column": 5,
+      "snippet": "system(cmd);",
+      "message": "Direct shell execution via 'system()' risks command injection vulnerabilities.",
+      "remediation": "Avoid shell invocation; use parameterized APIs ('execve' or 'CreateProcess') with strict input sanitation.",
+      "suppressed": false
+    },
+    {
+      "id": 6,
+      "rule_id": "RULE_CWE_120_SCANF_UNBOUNDED",
+      "cwe_id": "CWE-120",
+      "cwe_name": "Buffer Copy without Checking Size of Input",
+      "severity": "HIGH",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 49,
+      "column": 5,
+      "snippet": "scanf(\"%s\", username);",
+      "message": "Unbounded '%s' specifier in scanf allows buffer overflow.",
+      "remediation": "Specify field width in format (e.g., '%63s' for a 64-byte buffer).",
+      "suppressed": false
+    },
+    {
+      "id": 7,
+      "rule_id": "RULE_CWE_252_UNCHECKED_ALLOC",
+      "cwe_id": "CWE-252",
+      "cwe_name": "Unchecked Return Value / Missing Allocation Check",
+      "severity": "HIGH",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 55,
+      "column": 28,
+      "snippet": "char *buffer = (char *)malloc(len);",
+      "message": "Dynamic allocation via 'malloc()' without immediate NULL validation before use.",
+      "remediation": "Validate pointer immediately after allocation: 'if (!ptr) { /* handle error */ }'.",
+      "suppressed": false
+    },
+    {
+      "id": 8,
+      "rule_id": "RULE_CWE_120_STRCPY",
+      "cwe_id": "CWE-120",
+      "cwe_name": "Buffer Copy without Checking Size of Input",
+      "severity": "HIGH",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 56,
+      "column": 5,
+      "snippet": "strcpy(buffer, \"Pre-allocated string content\");",
+      "message": "Unbounded memory copy using 'strcpy()'. Destination buffer may be overrun.",
+      "remediation": "Use 'strncpy()' with explicit null-termination or 'snprintf(dest, sizeof(dest), \"%s\", src)'.",
+      "suppressed": false
+    },
+    {
+      "id": 9,
+      "rule_id": "RULE_CWE_252_UNCHECKED_ALLOC",
+      "cwe_id": "CWE-252",
+      "cwe_name": "Unchecked Return Value / Missing Allocation Check",
+      "severity": "HIGH",
+      "file": "C:\\Users\\brend\\Downloads\\Imersao-Alura\\c-security-auditor\\tests\\vulnerable_sample.c",
+      "line": 63,
+      "column": 27,
+      "snippet": "int *numbers = (int *)calloc(count, sizeof(int));",
+      "message": "Dynamic allocation via 'calloc()' without immediate NULL validation before use.",
+      "remediation": "Validate pointer immediately after allocation: 'if (!ptr) { /* handle error */ }'.",
+      "suppressed": false
+    }
+  ]
+}

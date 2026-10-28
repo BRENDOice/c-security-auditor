@@ -18,14 +18,15 @@ jobs:
         run: |
           make clean
           make
+          mkdir -p build
 
       - name: Run Audit on Vulnerable Sample (Security Gate Test)
         run: |
-          ./c-security-auditor tests/vulnerable_sample.c -o build/report_vulnerable.md -f markdown || echo "Vulnerabilidades detetadas com sucesso pelo SAST!"
+          ./build/c-security-auditor tests/vulnerable_sample.c -o build/report_vulnerable.md -f markdown || echo "Vulnerabilidades detetadas com sucesso pelo SAST!"
 
       - name: Run Audit on Clean Sample (Verification)
         run: |
-          ./c-security-auditor tests/clean_sample.c -o build/report_clean.md -f markdown
+          ./build/c-security-auditor tests/clean_sample.c -o build/report_clean.md -f markdown
 
   audit-windows:
     name: SAST Audit & Build (Windows PowerShell MinGW)
